@@ -1,0 +1,36 @@
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.4s ease-in forwards;
+}
+
+/* Ensure screens are hidden by default via class, not just inline style, to help with initial state if needed */
+.calculator-screen {
+  /* Existing styles... */
+  opacity: 1; /* Default state when visible */
+}
