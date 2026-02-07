@@ -1,0 +1,1275 @@
+/* ========================================
+   CSS CUSTOM PROPERTIES
+   ======================================== */
+:root {
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Surfaces */
+  --surface-base: #1e1e1e;
+  --surface-raised: #2a2a2a;
+  --surface-card: #2a2a2a;
+  --surface-overlay: #333333;
+  --surface-input: #1e1e1e;
+
+  /* Accent */
+  --accent: #d6f8e0;
+  --accent-dim: #b5e8c3;
+  --accent-glow: rgba(214, 248, 224, 0.1);
+  --accent-hover: #c5e7cf;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #ccc;
+  --text-muted: #888;
+  --text-on-accent: #1e1e1e;
+
+  /* Borders */
+  --border: #3a3a3a;
+  --border-accent: #d6f8e0;
+  --border-hover: #c5e7cf;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 30px rgba(214, 248, 224, 0.06);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 150ms var(--ease);
+  --transition-base: 250ms var(--ease);
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--surface-base);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.body-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   MAIN CARD (Selection screen wrapper)
+   ======================================== */
+.main-card {
+  width: 100%;
+  max-width: 540px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+header {
+  background: var(--surface-raised);
+  padding: 16px 20px;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-accent);
+}
+
+.main-card header {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-accent);
+  margin-bottom: 0;
+  border-radius: 0;
+  padding: 0 0 16px 0;
+}
+
+header h1 {
+  color: var(--accent);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+/* Header Actions (Formula btn + Apps grid) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.view-formula-button {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  transition: var(--transition-base);
+  white-space: nowrap;
+}
+
+.view-formula-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.view-formula-button:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   SELECTION SCREEN
+   ======================================== */
+.selection-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.selection-container {
+  background: var(--surface-raised);
+  padding: 30px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-accent);
+  max-width: 600px;
+  width: 100%;
+}
+
+.main-card .selection-container {
+  background: transparent;
+  border: none;
+  padding: 16px 4px;
+}
+
+.selection-container h2 {
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.selection-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0;
+}
+
+.select-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-input);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.select-input option {
+  background: var(--surface-input);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   ACTION BUTTONS
+   ======================================== */
+.selection-actions {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.proceed-button {
+  flex: 1;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 13px 8px;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  transition: var(--transition-base);
+}
+
+.proceed-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(184, 240, 200, 0.15);
+}
+
+.proceed-button:active {
+  transform: translateY(0);
+}
+
+.cgpa-calculator-button {
+  flex: 1;
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--border-accent);
+  padding: 13px 8px;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  transition: var(--transition-base);
+}
+
+.cgpa-calculator-button:hover {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.cgpa-calculator-button-small {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border-accent);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  transition: var(--transition-base);
+}
+
+.cgpa-calculator-button-small:hover {
+  background: var(--accent-glow);
+  border-color: var(--border-hover);
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ff8a8a;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   CALCULATOR SCREEN
+   ======================================== */
+.calculator-screen {
+  animation: screenFadeIn 0.35s var(--ease);
+}
+
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   BREADCRUMB / NAVIGATION BAR
+   ======================================== */
+.breadcrumb {
+  background: var(--surface-card);
+  padding: 15px 20px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-accent);
+  gap: 12px;
+}
+
+.breadcrumb span {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.breadcrumb-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.change-selection-button {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border-accent);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  transition: var(--transition-base);
+}
+
+.change-selection-button:hover {
+  background: var(--accent-glow);
+  border-color: var(--border-hover);
+}
+
+/* ========================================
+   INFO BOX
+   ======================================== */
+.info-box {
+  background: var(--surface-card);
+  padding: 15px 20px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.info-box p {
+  margin-bottom: 2px;
+}
+
+/* ========================================
+   SUBJECT CARDS GRID
+   ======================================== */
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
+.subject-card {
+  background: var(--surface-card);
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: border-color 0.2s;
+}
+
+.subject-card:hover {
+  border-color: var(--accent);
+}
+
+.subject-card h3 {
+  color: var(--accent);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ========================================
+   CGPA CALCULATOR GRID
+   ======================================== */
+.cgpa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cgpa-card {
+  background: var(--surface-card);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.cgpa-card:hover {
+  border-color: var(--accent);
+}
+
+.cgpa-card h3 {
+  color: var(--accent);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ========================================
+   INPUT GROUPS
+   ======================================== */
+.input-group {
+  margin-bottom: 12px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.78rem;
+  min-height: 18px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  transition: var(--transition-base);
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Elective Dropdown */
+.elective-dropdown {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.elective-dropdown:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.elective-dropdown option {
+  background: var(--surface-input);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   CALCULATE BUTTONS
+   ======================================== */
+.calculate-subject-button {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 11px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: 0;
+  transition: var(--transition-base);
+}
+
+.calculate-subject-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.calculate-subject-button:active {
+  transform: translateY(0);
+}
+
+.calculate-sgpa-container {
+  text-align: center;
+  margin: 28px 0;
+}
+
+.calculate-sgpa-button {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 14px 36px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  transition: var(--transition-base);
+  letter-spacing: -0.01em;
+}
+
+.calculate-sgpa-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(184, 240, 200, 0.15);
+}
+
+.calculate-sgpa-button:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   SUBJECT RESULTS
+   ======================================== */
+.subject-result {
+  background: var(--surface-input);
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-accent);
+  display: none;
+  min-height: 70px;
+  font-size: 0.85rem;
+}
+
+.subject-result strong {
+  color: var(--accent);
+}
+
+/* ========================================
+   OUTPUT SECTION
+   ======================================== */
+.output-section {
+  background: var(--surface-card);
+  padding: 25px;
+  border-radius: var(--radius-lg);
+  margin: 20px 0;
+  min-height: 50px;
+  border: 1px solid var(--border-accent);
+}
+
+.placeholder-text {
+  padding-top: 8px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.placeholder-text h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* ========================================
+   SGPA/CGPA DISPLAY
+   ======================================== */
+.sgpa-display {
+  text-align: center;
+  margin: 16px 0;
+  padding: 18px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  background: var(--accent-glow);
+}
+
+.sgpa-display .label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sgpa-display .value {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 6px 0;
+  letter-spacing: -0.03em;
+}
+
+.breakdown-title {
+  margin-top: 22px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.breakdown-list {
+  list-style: none;
+  padding: 0;
+}
+
+.breakdown-list li {
+  background: var(--surface-overlay);
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.summary-box {
+  background: var(--surface-overlay);
+  padding: 14px;
+  margin-top: 20px;
+  text-align: center;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+/* ========================================
+   PREDICTION TEXT
+   ======================================== */
+.prediction-text {
+  font-size: 0.75rem;
+  margin-top: 5px;
+  color: var(--accent-dim);
+}
+
+.predict-success {
+  color: #6ee7a0;
+  font-weight: 600;
+}
+
+.predict-fail {
+  color: #f87171;
+  font-weight: 600;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+footer {
+  background: transparent;
+  padding: 14px;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.main-card footer {
+  background: transparent;
+  border: none;
+  margin-top: 0;
+  border-radius: 0;
+  padding: 10px 0 0 0;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.modal-overlay.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: var(--surface-raised);
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  margin: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.close-modal-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--surface-overlay);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-base);
+}
+
+.close-modal-button:hover {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
+}
+
+.modal-content h2 {
+  color: var(--accent);
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.modal-section {
+  margin-bottom: 24px;
+}
+
+.modal-section h3 {
+  color: var(--accent);
+  margin-bottom: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ========================================
+   TABLES
+   ======================================== */
+table {
+  width: 100%;
+  margin: 14px 0;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+
+.breakdown-table th,
+.breakdown-table td {
+  padding: 11px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.breakdown-table th {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.breakdown-table tr:last-child td {
+  border-bottom: none;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+
+th,
+td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* ========================================
+   CALCULATION STEPS (Modal)
+   ======================================== */
+.calculation-step {
+  background: var(--surface-input);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+
+.calculation-step h4 {
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.calculation-step code {
+  display: block;
+  background: var(--surface-overlay);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin: 10px 0;
+  color: var(--text-primary);
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.82rem;
+}
+
+.calculation-step p {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.highlight-step {
+  border: 1.5px solid var(--border-accent);
+}
+
+.important-notes {
+  list-style: none;
+  padding: 0;
+}
+
+.important-notes li {
+  background: var(--surface-input);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   PRINT BUTTON
+   ======================================== */
+.print-container {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.print-button {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 14px 36px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transition-base);
+}
+
+.print-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   APPS MENU (Google Workspace-style)
+   ======================================== */
+.apps-menu-container {
+  position: relative;
+}
+
+.apps-toggle {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-base);
+  padding: 0;
+  margin: 0;
+}
+
+.apps-toggle svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.apps-toggle:hover,
+.apps-toggle.active {
+  background: var(--surface-overlay);
+  color: var(--accent);
+}
+
+.apps-dropdown {
+  position: absolute;
+  top: 130%;
+  right: -10px;
+  width: 260px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  display: none;
+  transform-origin: top right;
+}
+
+.apps-dropdown.show {
+  display: block;
+  animation: appsScaleIn 0.2s var(--ease);
+}
+
+@keyframes appsScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.apps-header {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 14px;
+  padding-left: 4px;
+  letter-spacing: -0.01em;
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 14px;
+  column-gap: 6px;
+}
+
+.app-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: var(--transition-base);
+  gap: 6px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.app-card:hover {
+  background: var(--accent-glow);
+  color: var(--text-primary);
+}
+
+.app-card.active {
+  background: transparent;
+}
+
+.app-card.active:hover {
+  background: var(--accent-glow);
+}
+
+.app-icon-container {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.app-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2px;
+  transition: transform 0.2s ease;
+}
+
+.app-card:hover img {
+  transform: scale(1.05);
+}
+
+.app-name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .main-card {
+    padding: 20px 16px;
+    border-radius: var(--radius-lg);
+  }
+
+  header h1 {
+    font-size: 1.25rem;
+  }
+
+  .view-formula-button {
+    padding: 9px 18px;
+    font-size: 0.82rem;
+  }
+
+  .selection-form {
+    padding: 0;
+  }
+
+  .selection-container h2 {
+    font-size: 1.05rem;
+    margin-bottom: 22px;
+  }
+
+  .subjects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cgpa-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subject-card,
+  .cgpa-card {
+    padding: 16px;
+  }
+
+  .input-group input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .select-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .calculate-sgpa-button,
+  .proceed-button,
+  .cgpa-calculator-button {
+    width: 100%;
+    padding: 13px;
+  }
+
+  .breadcrumb {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    padding: 14px 16px;
+  }
+
+  .breadcrumb span {
+    text-align: center;
+    font-size: 0.82rem;
+  }
+
+  .breadcrumb-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .change-selection-button,
+  .cgpa-calculator-button-small {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .modal-content {
+    padding: 20px 16px;
+    margin: 10px;
+    max-height: 92vh;
+  }
+
+  .selection-container {
+    padding: 20px;
+  }
+
+  .main-card .selection-container {
+    padding: 16px 0;
+  }
+
+  .output-section {
+    padding: 18px 14px;
+  }
+
+  .sgpa-display .value {
+    font-size: 2.25rem;
+  }
+
+  .info-box {
+    padding: 12px 14px;
+    font-size: 0.82rem;
+  }
+
+  /* Apps dropdown on mobile - full right alignment */
+  .apps-dropdown {
+    right: -8px;
+    width: 240px;
+  }
+}
+
+@media (max-width: 380px) {
+  .main-card {
+    padding: 16px 12px;
+  }
+
+  header h1 {
+    font-size: 0.95rem;
+  }
+
+  .view-formula-button {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+
+  .selection-container h2 {
+    font-size: 0.95rem;
+  }
+
+  .sgpa-display .value {
+    font-size: 2rem;
+  }
+
+  .apps-dropdown {
+    width: 220px;
+    right: -4px;
+  }
+
+  .app-icon-container {
+    width: 40px;
+    height: 40px;
+  }
+}

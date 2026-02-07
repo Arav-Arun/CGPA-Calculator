@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Primary Meta Tags -->
+    <title>KJSCE CGPA Calculator - SGPA to CGPA Converter for KJ Somaiya</title>
+    <link rel="canonical" href="https://kjsce-cgpa-calculator.vercel.app/" />
+    <meta
+      name="title"
+      content="KJSCE CGPA Calculator - SGPA to CGPA Converter for KJ Somaiya"
+    />
+    <meta
+      name="description"
+      content="Calculate your KJSCE / KJSSE CGPA and SGPA instantly. The most accurate grades calculator for KJ Somaiya students (2024-2028, 2025-2029 Batches). Convert SGPA to CGPA easily."
+    />
+    <meta
+      name="keywords"
+      content="KJSCE CGPA Calculator, KJSSE CGPA Calculator, KJ Somaiya SGPA Calculator, KJSCE Grading System, SGPA to CGPA Converter, KJ Somaiya Engineering Result, KJSCE Pointers, Semester Grade Calculator, Mumbai University Engineering, Somaiya Vidyavihar University"
+    />
+    <meta name="author" content="Arav Arun" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://kjsce-cgpa-calculator.vercel.app/"
+    />
+    <meta
+      property="og:title"
+      content="KJSCE CGPA Calculator - SGPA to CGPA Converter for KJ Somaiya"
+    />
+    <meta
+      property="og:description"
+      content="Calculate your KJSCE / KJSSE CGPA and SGPA instantly. The most accurate grades calculator for KJ Somaiya students (2024-2028, 2025-2029 Batches)."
+    />
+    <meta
+      property="og:image"
+      content="https://kjsce-cgpa-calculator.vercel.app/assets/banner.png"
+    />
+    <meta
+      property="og:image:alt"
+      content="KJSCE CGPA Calculator Banner showing grade point conversion table"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://kjsce-cgpa-calculator.vercel.app/"
+    />
+    <meta
+      property="twitter:title"
+      content="KJSCE CGPA Calculator - SGPA to CGPA Converter for KJ Somaiya"
+    />
+    <meta
+      property="twitter:description"
+      content="Calculate your KJSCE / KJSSE CGPA and SGPA instantly. The most accurate grades calculator for KJ Somaiya students (2024-2028, 2025-2029 Batches)."
+    />
+    <meta
+      property="twitter:image"
+      content="https://kjsce-cgpa-calculator.vercel.app/assets/banner.png"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/CGPAcalc-logo.png" />
+    <link rel="apple-touch-icon" href="assets/CGPAcalc-logo.png" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      [
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "KJSCE CGPA Calculator",
+          "applicationCategory": "EducationalApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "INR"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Arav Arun",
+            "url": "https://aravarun.xyz"
+          },
+          "description": "A comprehensive CGPA and SGPA calculator designed specifically for students of K.J. Somaiya College of Engineering (KJSCE/KJSSE). Calculate your semester pointers and overall CGPA with ease."
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://aravarun.xyz"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "KJSCE CGPA Calculator",
+              "item": "https://kjsce-cgpa-calculator.vercel.app/"
+            }
+          ]
+        }
+      ]
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Website Icon -->
+    <link rel="icon" href="assets/CGPAcalc-logo.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/print.css" />
+
+    <link rel="stylesheet" href="css/animations.css" />
+  </head>
+  <body class="body-centered">
+    <div class="main-card" id="app-container">
+      <!-- Header -->
+      <header class="banner">
+        <h1>KJSSE CGPA Calculator</h1>
+        <div class="header-actions">
+          <button class="view-formula-button" onclick="openFormulaModal()">
+            View Formula
+          </button>
+          <!-- Apps Grid Button -->
+          <div class="apps-menu-container">
+            <button
+              class="apps-toggle"
+              id="appsToggle"
+              title="Somaiya Apps"
+              aria-expanded="false"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </button>
+            <div class="apps-dropdown" id="appsDropdown">
+              <div class="apps-header">Your Apps</div>
+              <div class="apps-grid">
+                <a
+                  href="https://kjsse-results.vercel.app"
+                  class="app-card"
+                  target="_blank"
+                >
+                  <div class="app-icon-container">
+                    <img src="assets/app_results.png" alt="Results Portal" />
+                  </div>
+                  <span class="app-name">Results</span>
+                </a>
+                <a
+                  href="#"
+                  class="app-card active"
+                  onclick="event.preventDefault()"
+                >
+                  <div class="app-icon-container">
+                    <img
+                      src="assets/app_calculator.png"
+                      alt="CGPA Calculator"
+                    />
+                  </div>
+                  <span class="app-name">CGPA Calc</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <!-- Branch, Batch and Semester Selection Screen -->
+        <div id="selectionScreen" class="selection-screen">
+          <div class="selection-container">
+            <h2>Select Your Batch, Branch and Semester</h2>
+
+            <div class="selection-form">
+              <!-- Batch dropdown list-->
+              <div class="form-group">
+                <label for="batchSelect">Batch</label>
+                <select id="batchSelect" class="select-input">
+                  <option value="">Select Batch</option>
+                  <option value="2025-2029">2025-2029</option>
+                  <option value="2024-2028">2024-2028</option>
+                </select>
+              </div>
+
+              <!-- Branch dropdown list-->
+              <div class="form-group">
+                <label for="branchSelect">Branch</label>
+                <select id="branchSelect" class="select-input">
+                  <option value="">Select Branch</option>
+                  <option value="comp">Computer Engineering</option>
+                  <option value="it">Information Technology</option>
+                  <option value="aids">
+                    Artificial Intelligence & Data Science
+                  </option>
+                  <option value="csbs">
+                    Computer Science & Business Systems
+                  </option>
+                  <option value="cce">
+                    Computer & Communication Engineering
+                  </option>
+                  <option value="ece">
+                    Electronics & Computer Engineering
+                  </option>
+                  <option value="extc">
+                    Electronics & Telecommunication Engineering
+                  </option>
+                  <option value="vlsi">VLSI Design & Technology</option>
+                  <option value="rai">
+                    Robotics & Artificial Intelligence
+                  </option>
+                  <option value="mech">Mechanical Engineering</option>
+                </select>
+              </div>
+
+              <!-- Semester dropdown list -->
+              <div class="form-group">
+                <label for="semesterSelect">Semester</label>
+                <select id="semesterSelect" class="select-input">
+                  <option value="">Select Semester</option>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                </select>
+              </div>
+
+              <!-- Proceed buttons -->
+              <div class="selection-actions">
+                <button class="proceed-button" onclick="proceedToCalculator()">
+                  Proceed to SGPA Calculator
+                </button>
+                <button
+                  class="cgpa-calculator-button"
+                  onclick="proceedToCGPACalculator()"
+                >
+                  Calculate Overall CGPA
+                </button>
+              </div>
+
+              <!-- Error message -->
+              <div
+                id="selectionError"
+                class="error-message"
+                style="display: none"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculation Screen (Hidden initially) -->
+        <div
+          id="calculatorScreen"
+          class="calculator-screen"
+          style="display: none"
+        >
+          <!-- Shows current selection -->
+          <div class="breadcrumb">
+            <span id="breadcrumbText"></span>
+            <div class="breadcrumb-buttons">
+              <button
+                class="change-selection-button"
+                onclick="changeSelection()"
+              >
+                Change Selection
+              </button>
+              <button
+                class="cgpa-calculator-button-small"
+                onclick="proceedToCGPACalculator()"
+              >
+                Calculate Overall CGPA
+              </button>
+            </div>
+          </div>
+
+          <!-- Instructions -->
+          <div class="info-box">
+            <p>
+              1. Enter marks for each subject and click "Calculate Subject
+              Pointer"
+            </p>
+            <p>2. Then click "Calculate Overall SGPA" to get overall SGPA</p>
+          </div>
+
+          <!-- Subject cards container -->
+          <div class="subjects-grid" id="subjectsGrid"></div>
+
+          <!-- Calculate overall SGPA button -->
+          <div class="calculate-sgpa-container">
+            <button
+              class="calculate-sgpa-button"
+              onclick="calculateOverallSGPA()"
+            >
+              Calculate Overall SGPA
+            </button>
+          </div>
+
+          <!-- Results display section -->
+          <div id="outputSection" class="output-section">
+            <div class="placeholder-text">
+              <h3>Your overall SGPA will appear here</h3>
+            </div>
+          </div>
+
+          <!-- Print Button -->
+          <div
+            id="printContainer"
+            class="print-container"
+            style="display: none"
+          >
+            <button class="print-button" onclick="printResult()">
+              Print Result
+            </button>
+          </div>
+        </div>
+
+        <!-- CGPA Calculator Screen (Hidden initially) -->
+        <div
+          id="cgpaCalculatorScreen"
+          class="calculator-screen"
+          style="display: none"
+        >
+          <!-- Navigation -->
+          <div class="breadcrumb">
+            <span>Overall CGPA Calculator</span>
+            <button class="change-selection-button" onclick="changeSelection()">
+              Back to Selection
+            </button>
+          </div>
+
+          <!-- Instructions -->
+          <div class="info-box">
+            <p>
+              Enter your SGPA and Credits for each semester to calculate your
+              overall CGPA
+            </p>
+            <p>Leave semesters blank if you haven't completed them yet</p>
+          </div>
+
+          <!-- Semester cards grid -->
+          <div class="cgpa-grid" id="cgpaGrid">
+            <!-- Semester 1 -->
+            <div class="cgpa-card">
+              <h3>Semester 1</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa1"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits1"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 2 -->
+            <div class="cgpa-card">
+              <h3>Semester 2</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa2"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits2"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 3 -->
+            <div class="cgpa-card">
+              <h3>Semester 3</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa3"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits3"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 4 -->
+            <div class="cgpa-card">
+              <h3>Semester 4</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa4"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits4"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 5 -->
+            <div class="cgpa-card">
+              <h3>Semester 5</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa5"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits5"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 6 -->
+            <div class="cgpa-card">
+              <h3>Semester 6</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa6"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits6"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 7 -->
+            <div class="cgpa-card">
+              <h3>Semester 7</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa7"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits7"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+
+            <!-- Semester 8 -->
+            <div class="cgpa-card">
+              <h3>Semester 8</h3>
+              <div class="input-group">
+                <label>SGPA</label>
+                <input
+                  type="number"
+                  id="sgpa8"
+                  min="0"
+                  max="10"
+                  step="0.01"
+                  placeholder="Enter SGPA"
+                />
+              </div>
+              <div class="input-group">
+                <label>Credits</label>
+                <input
+                  type="number"
+                  id="credits8"
+                  min="0"
+                  step="1"
+                  placeholder="Enter Credits"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Calculate CGPA button -->
+          <div class="calculate-sgpa-container">
+            <button class="calculate-sgpa-button" onclick="calculateCGPA()">
+              Calculate Overall CGPA
+            </button>
+          </div>
+
+          <!-- CGPA Results -->
+          <div id="cgpaOutputSection" class="output-section">
+            <div class="placeholder-text">
+              <h3>Your overall CGPA will appear here</h3>
+            </div>
+          </div>
+
+          <!-- Print Button for Overall CGPA -->
+          <!-- Dynamically added by script.js -->
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          Made with ❤️ by
+          <a href="https://aravarun.xyz" style="text-decoration: underline"
+            >Arav Arun</a
+          >
+        </p>
+      </footer>
+    </div>
+
+    <!-- Formula Modal -->
+    <div
+      id="formulaModal"
+      class="modal-overlay"
+      onclick="closeModalOnClickOutside(event)"
+    >
+      <div class="modal-content">
+        <button class="close-modal-button" onclick="closeFormulaModal()">
+          X
+        </button>
+
+        <h2>SGPA Calculation Guide</h2>
+
+        <!-- Grade conversion table -->
+        <div class="modal-section">
+          <h3>Grade Point Conversion Table:</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>% Marks</th>
+                <th>Grade Point</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>80% and above</td>
+                <td><strong>10</strong></td>
+                <td>O (Outstanding)</td>
+              </tr>
+              <tr>
+                <td>70% – 79%</td>
+                <td><strong>9</strong></td>
+                <td>A+ (Excellent)</td>
+              </tr>
+              <tr>
+                <td>60% – 69%</td>
+                <td><strong>8</strong></td>
+                <td>A (Very Good)</td>
+              </tr>
+              <tr>
+                <td>55% – 59%</td>
+                <td><strong>7</strong></td>
+                <td>B+ (Good)</td>
+              </tr>
+              <tr>
+                <td>50% – 54%</td>
+                <td><strong>6</strong></td>
+                <td>B (Above Average)</td>
+              </tr>
+              <tr>
+                <td>45% – 49%</td>
+                <td><strong>5</strong></td>
+                <td>C (Average)</td>
+              </tr>
+              <tr>
+                <td>40% – 44%</td>
+                <td><strong>4</strong></td>
+                <td>P (Pass)</td>
+              </tr>
+              <tr>
+                <td>Below 40%</td>
+                <td><strong>0</strong></td>
+                <td>F (Fail)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Calculation steps -->
+        <div class="modal-section">
+          <h3>Calculation Steps:</h3>
+
+          <div class="calculation-step">
+            <h4>For Theory Subjects (with IA, MSE, ESE):</h4>
+            <code>Step 1: Total = IA + MSE + ESE</code>
+            <p><strong>Example:</strong> 18 + 25 + 42 = 85 marks</p>
+
+            <code>Step 2: Percentage = (Total / Highest Marks) × 100</code>
+            <p><strong>Example:</strong> (85 / 100) × 100 = 85%</p>
+
+            <code>Step 3: Grade Point = Based on percentage (see table)</code>
+            <p><strong>Example:</strong> 85% = Grade Point 10</p>
+          </div>
+
+          <div class="calculation-step">
+            <h4>For Tutorial/Lab Subjects (CA or Lab marks only):</h4>
+            <code>Step 1: Total = CA or Lab marks</code>
+            <p><strong>Example:</strong> 45 out of 50</p>
+
+            <code>Step 2: Percentage = (Total / Highest Marks) × 100</code>
+            <p><strong>Example:</strong> (45 / 50) × 100 = 90%</p>
+
+            <code>Step 3: Grade Point = Based on percentage (see table)</code>
+            <p><strong>Example:</strong> 90% = Grade Point 10</p>
+          </div>
+
+          <div class="calculation-step">
+            <h4>Calculate Credit Points for Each Subject:</h4>
+            <code>Credit Points = Grade Point × Subject Credits</code>
+            <p><strong>Example:</strong> 10 × 4 = 40 credit points</p>
+          </div>
+
+          <div class="calculation-step highlight-step">
+            <h4>Final Step: Calculate Overall SGPA</h4>
+            <code>SGPA = Total Credit Points / Total Credits</code>
+            <p><strong>Example:</strong> 200 / 22 = 9.09</p>
+          </div>
+
+          <div class="calculation-step highlight-step">
+            <h4>Calculate Overall CGPA</h4>
+            <code
+              >CGPA = (SGPA1×Credits1 + SGPA2×Credits2 + ... + SGPA8×Credits8) /
+              Total Credits</code
+            >
+            <p>
+              <strong>Example:</strong> (9.0×21 + 9.5×20 + 8.8×22 + 9.2×21) / 84
+              = 9.13
+            </p>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="modal-section">
+          <h3>Note:</h3>
+          <ul class="important-notes">
+            <li>You need at least 40% in each component to pass</li>
+            <li>60% of total credits needed in First Year</li>
+            <li>ESE and CA are separate passing heads for theory courses</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden Print Area for SGPA -->
+    <div id="printAreaSGPA" class="print-area">
+      <div class="watermark">
+        <img
+          src="assets/CGPAcalc-logo.png"
+          alt="KJSCE CGPA Calculator Logo"
+          width="150"
+          height="150"
+        />
+      </div>
+
+      <div class="print-content">
+        <div class="print-header">
+          <h1 id="printTitleSGPA">KJSCE / KJSSE SGPA Report</h1>
+        </div>
+
+        <div class="student-details">
+          <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span class="detail-value underline-field"
+              >________________________________________</span
+            >
+          </div>
+          <div class="detail-row-group">
+            <div class="detail-row">
+              <span class="detail-label">Batch:</span>
+              <span id="printBatch" class="detail-value"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Branch:</span>
+              <span id="printBranch" class="detail-value"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Semester:</span>
+              <span id="printSemester" class="detail-value"></span>
+            </div>
+          </div>
+        </div>
+
+        <table class="print-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Marks Breakdown</th>
+              <th>Total Marks</th>
+              <th>Credits</th>
+              <th>Grade Point</th>
+              <th>Credit Points</th>
+            </tr>
+          </thead>
+          <tbody id="printTableBody">
+            <!-- Rows will be populated by JS -->
+          </tbody>
+          <tfoot id="printTableFooter">
+            <!-- Footer will be populated by JS -->
+          </tfoot>
+        </table>
+
+        <div class="print-footer">
+          <p>
+            KJSCE / KJSSE CGPA Calculator • Made by
+            <a href="https://aravarun.xyz" target="_blank">Arav Arun</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden Print Area for Overall CGPA -->
+    <div id="printAreaOverall" class="print-area">
+      <div class="watermark">
+        <img
+          src="assets/CGPAcalc-logo.png"
+          alt="KJSCE CGPA Calculator Logo"
+          width="150"
+          height="150"
+        />
+      </div>
+
+      <div class="print-content">
+        <div class="print-header">
+          <h1>KJSCE / KJSSE Overall CGPA Report</h1>
+        </div>
+
+        <div class="student-details">
+          <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span class="detail-value underline-field"
+              >________________________________________</span
+            >
+          </div>
+        </div>
+
+        <table class="print-table">
+          <thead>
+            <tr>
+              <th>Semester</th>
+              <th>SGPA</th>
+            </tr>
+          </thead>
+          <tbody id="printOverallTableBody">
+            <!-- Rows will be populated by JS -->
+          </tbody>
+          <tfoot id="printOverallTableFooter">
+            <!-- Footer will be populated by JS -->
+          </tfoot>
+        </table>
+
+        <div class="print-footer">
+          <p>
+            KJSCE / KJSSE CGPA Calculator • Made by
+            <a href="https://aravarun.xyz" target="_blank">Arav Arun</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- JavaScript Files Load -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/clarity.js"></script>
+  </body>
+</html>
