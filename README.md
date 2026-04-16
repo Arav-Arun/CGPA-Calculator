@@ -12,7 +12,6 @@ A **minimal**, **intuitive**, and **responsive** web-based calculator built to h
 - **SGPA Calculation:** Calculates Semester Grade Point Average based on marks and credits.
 - **Overall CGPA Calculation:** Calculates Cumulative Grade Point Average across multiple semesters.
 - **Mobile Optimized:** Fully responsive design that works seamlessly on all devices.
-- **Print Friendly:** Generate clean, professional PDF reports of your results directly from the app.
 - **Modern UI:** Features a dark mode aesthetic with a subtle grid background and glassmorphism effects.
 - **Privacy Focused:** All calculations are done locally in your browser. No data is sent to any server.
 

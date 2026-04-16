@@ -6,7 +6,6 @@
  *  - data-config.js  → maps batch + branch + semester to subject lists
  *  - ui.js           → screen switching, error messages, subject card rendering
  *  - calculator.js   → grade/SGPA calculation and confetti
- *  - print.js        → generating printable SGPA/CGPA reports
  *  - utils.js        → helper functions (debounce, grade point lookup, branch names)
  */
 
@@ -33,7 +32,6 @@ import {
   updatePrediction,
   triggerConfetti,
 } from "./calculator.js";
-import { printResult, printOverallResult } from "./print.js";
 
 // ── Expose functions to `window` so onclick handlers in HTML can call them ──
 
@@ -42,8 +40,6 @@ window.closeFormulaModal = closeFormulaModal;
 window.closeModalOnClickOutside = closeModalOnClickOutside;
 window.calculateSubject = calculateSubject;
 window.updatePrediction = updatePrediction;
-window.printResult = printResult;
-window.printOverallResult = printOverallResult;
 window.proceedToCalculator = proceedToCalculator;
 window.proceedToCGPACalculator = proceedToCGPACalculator;
 window.changeSelection = changeSelection;
@@ -220,7 +216,6 @@ function calculateOverallSGPA() {
   </div>`;
 
   document.getElementById("outputSection").innerHTML = output;
-  document.getElementById("printContainer").style.display = "block";
   document
     .getElementById("outputSection")
     .scrollIntoView({ behavior: "smooth" });
@@ -303,8 +298,6 @@ function calculateCGPA() {
     <strong>Semesters Included:</strong> ${semestersEntered} | 
     <strong>CGPA:</strong> ${cgpa.toFixed(2)}
   </div>`;
-
-  output += `<div class="print-container"><button class="print-button" onclick="printOverallResult()">Print Result</button></div>`;
 
   document.getElementById("cgpaOutputSection").innerHTML = output;
   document
