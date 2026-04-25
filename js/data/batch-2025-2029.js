@@ -150,13 +150,25 @@ export const semester2CommonSubjects = [
   },
   {
     id: 205,
-    name: "Object-Oriented Programming Methodology",
-    credits: 3,
+    name: "Object-Oriented Programming Methodology (Theory)",
+    credits: 2,
     fields: [
-      { name: "ca", label: "Continuous Assessment (CA)", max: 50 },
-      { name: "practical", label: "Practical / OR Exam", max: 50 },
+      { name: "ese_ost", label: "ESE OST", max: 25 },
+      { name: "ese_written", label: "ESE Theory Written Test", max: 25 },
     ],
-    defaultHighest: 100,
+    defaultHighest: 50,
+  },
+  {
+    id: 212,
+    name: "Object-Oriented Programming Methodology (Lab)",
+    credits: 1,
+    fields: [
+      { name: "attendance", label: "Attendance", max: 5 },
+      { name: "ost", label: "OST", max: 20 },
+      { name: "debug", label: "Debug Test", max: 10 },
+      { name: "lab_experiment", label: "Laboratory Experiment", max: 15 },
+    ],
+    defaultHighest: 50,
   },
   {
     id: 206,

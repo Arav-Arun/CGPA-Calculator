@@ -442,49 +442,10 @@ function addAutoSaveListeners() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  APPS GRID TOGGLE — The "Your Apps" dropdown in the header
-// ══════════════════════════════════════════════════════════════
-
-function setupAppsToggle() {
-  const appsToggle = document.getElementById("appsToggle");
-  const appsDropdown = document.getElementById("appsDropdown");
-
-  if (appsToggle && appsDropdown) {
-    // Toggle dropdown
-    appsToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isExpanded = appsToggle.getAttribute("aria-expanded") === "true";
-      appsToggle.setAttribute("aria-expanded", !isExpanded);
-      appsToggle.classList.toggle("active");
-      appsDropdown.classList.toggle("show");
-    });
-
-    // Close when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!appsToggle.contains(e.target) && !appsDropdown.contains(e.target)) {
-        appsToggle.classList.remove("active");
-        appsToggle.setAttribute("aria-expanded", "false");
-        appsDropdown.classList.remove("show");
-      }
-    });
-
-    // Close on Escape key
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && appsDropdown.classList.contains("show")) {
-        appsToggle.classList.remove("active");
-        appsToggle.setAttribute("aria-expanded", "false");
-        appsDropdown.classList.remove("show");
-      }
-    });
-  }
-}
-
-// ══════════════════════════════════════════════════════════════
 //  INITIALIZATION — Runs once when the page finishes loading
 // ══════════════════════════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", () => {
   loadState(); // Restore saved dropdown selections
   addAutoSaveListeners(); // Auto-save on any input change
-  setupAppsToggle(); // Wire up the "Your Apps" dropdown
 });

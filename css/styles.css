@@ -977,150 +977,6 @@ th {
   transform: translateY(-1px);
 }
 
-/* ========================================
-   APPS MENU (Google Workspace-style)
-   ======================================== */
-.apps-menu-container {
-  position: relative;
-}
-
-.apps-toggle {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: var(--transition-base);
-  padding: 0;
-  margin: 0;
-}
-
-.apps-toggle svg {
-  width: 22px;
-  height: 22px;
-  display: block;
-}
-
-.apps-toggle:hover,
-.apps-toggle.active {
-  background: var(--surface-overlay);
-  color: var(--accent);
-}
-
-.apps-dropdown {
-  position: absolute;
-  top: 130%;
-  right: -10px;
-  width: 260px;
-  background: var(--surface-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  box-shadow: var(--shadow-lg);
-  z-index: 1000;
-  display: none;
-  transform-origin: top right;
-}
-
-.apps-dropdown.show {
-  display: block;
-  animation: appsScaleIn 0.2s var(--ease);
-}
-
-@keyframes appsScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.apps-header {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 14px;
-  padding-left: 4px;
-  letter-spacing: -0.01em;
-}
-
-.apps-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  row-gap: 14px;
-  column-gap: 6px;
-}
-
-.app-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 4px;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  color: var(--text-secondary);
-  transition: var(--transition-base);
-  gap: 6px;
-  cursor: pointer;
-  background: transparent;
-}
-
-.app-card:hover {
-  background: var(--accent-glow);
-  color: var(--text-primary);
-}
-
-.app-card.active {
-  background: transparent;
-}
-
-.app-card.active:hover {
-  background: var(--accent-glow);
-}
-
-.app-icon-container {
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 11px;
-  background: transparent;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.app-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 2px;
-  transition: transform 0.2s ease;
-}
-
-.app-card:hover img {
-  transform: scale(1.05);
-}
-
-.app-name {
-  font-size: 0.72rem;
-  font-weight: 500;
-  text-align: center;
-  white-space: nowrap;
-  letter-spacing: 0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-}
 
 /* ========================================
    MOBILE RESPONSIVE
@@ -1234,11 +1090,7 @@ th {
     font-size: 0.82rem;
   }
 
-  /* Apps dropdown on mobile - full right alignment */
-  .apps-dropdown {
-    right: -8px;
-    width: 240px;
-  }
+
 }
 
 @media (max-width: 380px) {
@@ -1263,13 +1115,5 @@ th {
     font-size: 2rem;
   }
 
-  .apps-dropdown {
-    width: 220px;
-    right: -4px;
-  }
 
-  .app-icon-container {
-    width: 40px;
-    height: 40px;
-  }
 }
