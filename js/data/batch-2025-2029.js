@@ -142,13 +142,6 @@ export const semester2CommonSubjects = [
     defaultHighest: 100,
   },
   {
-    id: 204,
-    name: "Environmental Science",
-    credits: 2,
-    fields: [{ name: "ca", label: "Continuous Assessment (CA)", max: 50 }],
-    defaultHighest: 50,
-  },
-  {
     id: 205,
     name: "Object-Oriented Programming Methodology (Theory)",
     credits: 2,
