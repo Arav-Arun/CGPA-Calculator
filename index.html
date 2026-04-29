@@ -131,6 +131,15 @@
       <header class="banner">
         <h1>KJSSE CGPA Calculator</h1>
         <div class="header-actions">
+          <div class="profile-dropdown-container">
+            <button id="profileButton" class="profile-button" onclick="toggleProfileMenu()">
+              👤 <span id="activeProfileName">Profile</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div id="profileMenu" class="profile-menu">
+              <!-- Profiles injected here -->
+            </div>
+          </div>
           <button class="view-formula-button" onclick="openFormulaModal()">
             View Formula
           </button>
@@ -683,6 +692,5 @@
 
     <!-- JavaScript Files Load -->
     <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/clarity.js"></script>
   </body>
 </html>

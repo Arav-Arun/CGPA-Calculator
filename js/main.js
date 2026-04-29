@@ -2,11 +2,13 @@
  * Main Application Logic
  *
  * This is the entry point. It ties together all modules:
- *  - state.js        → holds the global app state (selections, marks, grade points)
- *  - data-config.js  → maps batch + branch + semester to subject lists
- *  - ui.js           → screen switching, error messages, subject card rendering
- *  - calculator.js   → grade/SGPA calculation and confetti
- *  - utils.js        → helper functions (debounce, grade point lookup, branch names)
+ *  - state.js        → holds global app state
+ *  - data-config.js  → subject data
+ *  - ui.js           → screen switching and rendering
+ *  - profiles.js     → multi-profile management
+ *  - persistence.js  → save/load logic
+ *  - calculator.js   → calculation engine
+ *  - utils.js        → helper functions
  */
 
 import {
@@ -17,7 +19,9 @@ import {
   setSelectedSemester,
   setCurrentSubjects,
 } from "./state.js";
+
 import { getSubjects } from "./data-config.js";
+
 import {
   switchScreen,
   showError,
@@ -26,15 +30,29 @@ import {
   closeFormulaModal,
   closeModalOnClickOutside,
 } from "./ui.js";
+
 import { debounce, branchNames } from "./utils.js";
+
 import {
   calculateSubject,
   updatePrediction,
   triggerConfetti,
 } from "./calculator.js";
 
-// ── Expose functions to `window` so onclick handlers in HTML can call them ──
+import {
+  initProfiles,
+  getActiveProfileData,
+  switchProfileLogic,
+  renderProfileMenu,
+} from "./profiles.js";
 
+import {
+  saveState,
+  loadState,
+  restoreMarksForCurrentSelection,
+} from "./persistence.js";
+
+// ── Expose functions to `window` for HTML handlers ──
 window.openFormulaModal = openFormulaModal;
 window.closeFormulaModal = closeFormulaModal;
 window.closeModalOnClickOutside = closeModalOnClickOutside;
@@ -46,41 +64,37 @@ window.changeSelection = changeSelection;
 window.calculateOverallSGPA = calculateOverallSGPA;
 window.calculateCGPA = calculateCGPA;
 window.backToSGPACalculator = backToSGPACalculator;
+window.switchProfile = switchProfile;
+window.toggleProfileMenu = toggleProfileMenu;
 
 // ══════════════════════════════════════════════════════════════
 //  MAIN FLOW — Screen navigation and user actions
 // ══════════════════════════════════════════════════════════════
 
 function proceedToCalculator() {
-  const batchDropdown = document.getElementById("batchSelect");
-  const branchDropdown = document.getElementById("branchSelect");
-  const semesterDropdown = document.getElementById("semesterSelect");
+  const batchId = document.getElementById("batchSelect").value;
+  const branchId = document.getElementById("branchSelect").value;
+  const semesterId = parseInt(document.getElementById("semesterSelect").value);
 
-  const batchId = batchDropdown.value;
-  const branchId = branchDropdown.value;
-  const semesterId = parseInt(semesterDropdown.value);
-
-  if (batchId === "") return showError("Please select a batch");
-  if (branchId === "") return showError("Please select a branch");
-  if (semesterId === 0 || isNaN(semesterId))
-    return showError("Please select a semester");
+  if (!batchId) return showError("Please select a batch");
+  if (!branchId) return showError("Please select a branch");
+  if (!semesterId || isNaN(semesterId)) return showError("Please select a semester");
 
   const subjects = getSubjects(branchId, semesterId, batchId);
-  if (subjects === null)
-    return showError("Data for the selected combination is not available yet");
+  if (!subjects) return showError("Data for this combination is not available yet");
 
   setSelectedBatch(batchId);
   setSelectedBranch(branchId);
   setSelectedSemester(semesterId);
   setCurrentSubjects(subjects);
 
-  switchScreen("calculatorScreen", function () {
+  switchScreen("calculatorScreen", () => {
     document.getElementById("app-container").classList.remove("main-card");
     document.body.classList.remove("body-centered");
   });
 
-  const breadcrumbText = document.getElementById("breadcrumbText");
-  breadcrumbText.textContent = `Batch ${batchId} | ${branchNames[branchId]} | Semester ${semesterId}`;
+  document.getElementById("breadcrumbText").textContent = 
+    `Batch ${batchId} | ${branchNames[branchId]} | Semester ${semesterId}`;
 
   createSubjectCards(subjects);
   restoreMarksForCurrentSelection();
@@ -89,7 +103,7 @@ function proceedToCalculator() {
 }
 
 function proceedToCGPACalculator() {
-  switchScreen("cgpaCalculatorScreen", function () {
+  switchScreen("cgpaCalculatorScreen", () => {
     document.getElementById("app-container").classList.remove("main-card");
     document.body.classList.remove("body-centered");
   });
@@ -118,9 +132,11 @@ function changeSelection() {
     gradePoints: {},
   });
 
+  // Clear UI
   document.getElementById("subjectsGrid").innerHTML = "";
-  document.getElementById("outputSection").innerHTML =
-    '<div class="placeholder-text"><h3>Your overall SGPA will appear here</h3></div>';
+  const placeholder = '<div class="placeholder-text"><h3>Your results will appear here</h3></div>';
+  document.getElementById("outputSection").innerHTML = placeholder;
+  document.getElementById("cgpaOutputSection").innerHTML = placeholder;
 
   for (let sem = 1; sem <= 8; sem++) {
     const s = document.getElementById("sgpa" + sem);
@@ -128,323 +144,159 @@ function changeSelection() {
     if (s) s.value = "";
     if (c) c.value = "";
   }
-  document.getElementById("cgpaOutputSection").innerHTML =
-    '<div class="placeholder-text"><h3>Your overall CGPA will appear here</h3></div>';
 
   document.getElementById("batchSelect").value = "";
   document.getElementById("branchSelect").value = "";
   document.getElementById("semesterSelect").value = "";
 
-  switchScreen("selectionScreen", function () {
+  switchScreen("selectionScreen", () => {
     document.getElementById("app-container").classList.add("main-card");
     document.body.classList.add("body-centered");
   });
 }
 
-// ── Calculate SGPA from all subject marks on the calculator screen ──
-function calculateOverallSGPA() {
-  const { currentSubjects, gradePoints } = getState();
+// ══════════════════════════════════════════════════════════════
+//  MULTI-PROFILE ACTIONS
+// ══════════════════════════════════════════════════════════════
 
-  // Check valid inputs
-  let allValid = true;
-  for (const subject of currentSubjects) {
-    for (const field of subject.fields) {
-      const inputId = "s" + subject.id + "-" + field.name;
-      const el = document.getElementById(inputId);
-      const val = parseFloat(el.value);
-      if (isNaN(val) || el.value === "" || val < 0 || val > field.max) {
-        allValid = false;
-        break;
-      }
+function switchProfile(profileId) {
+  switchProfileLogic(profileId, () => {
+    renderProfileDropdown();
+    
+    // Smart Reload: Jump to calculator if selection exists
+    const data = getActiveProfileData();
+    
+    // Reset everything first
+    changeSelection();
+    loadState();
+
+    if (data && data.batch && data.branch && data.semester) {
+      proceedToCalculator();
     }
-  }
-
-  if (!allValid) {
-    const outputSection = document.getElementById("outputSection");
-    outputSection.innerHTML =
-      '<div class="placeholder-text"><h3 style="color: #ff6b6b;">Please enter marks for all subjects correctly!</h3></div>';
-    outputSection.scrollIntoView({ behavior: "smooth" });
-    return;
-  }
-
-  // Calculate SGPA
-  let totalCreditPoints = 0;
-  let totalCredits = 0;
-
-  // Recalculate all subjects to ensure gradePoints is fresh
-  currentSubjects.forEach((sub) => calculateSubject(sub.id));
-
-  // Re-read grade points (calculateSubject updates state.gradePoints)
-  // Note: calculateSubject is synchronous
-  const freshState = getState();
-
-  currentSubjects.forEach((subject) => {
-    let gp = freshState.gradePoints[subject.id] || 0;
-    totalCreditPoints += gp * subject.credits;
-    totalCredits += subject.credits;
   });
-
-  const sgpa = totalCreditPoints / totalCredits;
-
-  // Build Output
-  let output = "";
-  output += `<div class="sgpa-display">
-    <div class="label">Overall SGPA:</div>
-    <div class="value">${sgpa.toFixed(2)}</div>
-  </div>`;
-
-  output += `<h4 class="breakdown-title">Subject Breakdown:</h4>
-  <div class="table-responsive">
-  <table class="breakdown-table">
-  <thead><tr>
-  <th>Subject</th><th>Grade Point</th><th>Credits</th><th>Credit Points</th>
-  </tr></thead><tbody>`;
-
-  currentSubjects.forEach((subject) => {
-    let gp = freshState.gradePoints[subject.id] || 0;
-    const cp = gp * subject.credits;
-    let displayName = subject.name;
-
-    if (subject.hasOptions) {
-      const el = document.getElementById("s" + subject.id + "-elective");
-      if (el && el.value) {
-        const opt = subject.options.find((o) => o.value === el.value);
-        if (opt) displayName = opt.label;
-      }
-    }
-
-    output += `<tr>
-      <td>${displayName}</td>
-      <td>${gp}</td>
-      <td>${subject.credits}</td>
-      <td>${cp.toFixed(2)}</td>
-    </tr>`;
-  });
-
-  output += `</tbody></table></div>`;
-  output += `<div class="summary-box">
-    <strong>Total Credit Points:</strong> ${totalCreditPoints.toFixed(2)} | 
-    <strong>Total Credits:</strong> ${totalCredits} | 
-    <strong>SGPA:</strong> ${sgpa.toFixed(2)}
-  </div>`;
-
-  document.getElementById("outputSection").innerHTML = output;
-  document
-    .getElementById("outputSection")
-    .scrollIntoView({ behavior: "smooth" });
-
-  if (sgpa >= 9.0) triggerConfetti();
 }
 
-// ── Calculate CGPA from per-semester SGPA + credits ──
+function renderProfileDropdown() {
+  renderProfileMenu(
+    (id) => switchProfile(id),
+    () => switchProfile("ADD_NEW")
+  );
+}
+
+function toggleProfileMenu(forceState) {
+  const menu = document.getElementById("profileMenu");
+  if (!menu) return;
+  if (typeof forceState === "boolean") {
+    forceState ? menu.classList.add("show") : menu.classList.remove("show");
+  } else {
+    menu.classList.toggle("show");
+  }
+}
+
+// Close profile menu on outside click
+document.addEventListener("click", (e) => {
+  const container = document.querySelector(".profile-dropdown-container");
+  if (container && !container.contains(e.target)) {
+    toggleProfileMenu(false);
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  CALCULATION WRAPPERS (Directly calling engine)
+// ══════════════════════════════════════════════════════════════
+
+// Simplified wrappers that handle UI results based on calculator.js logic
+// These remain here as they are tightly coupled to the DOM result sections.
+
+function calculateOverallSGPA() {
+  const state = getState();
+  if (state.currentSubjects.length === 0) return;
+
+  let totalCreditPoints = 0;
+  let totalCredits = 0;
+  let allCalculated = true;
+
+  state.currentSubjects.forEach((subject) => {
+    const gp = state.gradePoints[subject.id];
+    if (gp !== undefined && gp !== null) {
+      totalCreditPoints += gp * subject.credits;
+      totalCredits += subject.credits;
+    } else {
+      allCalculated = false;
+    }
+  });
+
+  if (!allCalculated) {
+    return showError("Please calculate all subjects first!");
+  }
+
+  const sgpa = totalCreditPoints / totalCredits;
+  const resultDiv = document.getElementById("outputSection");
+
+  resultDiv.innerHTML = `
+    <div class="final-result-card">
+      <h2>Semester ${state.selectedSemester} Result</h2>
+      <div class="sgpa-value">${sgpa.toFixed(2)}</div>
+      <p>Total Credits: ${totalCredits} | Total Points: ${totalCreditPoints.toFixed(2)}</p>
+    </div>
+  `;
+  resultDiv.scrollIntoView({ behavior: "smooth" });
+  if (sgpa >= 9.0) triggerConfetti();
+  saveState();
+}
+
 function calculateCGPA() {
   let totalCreditPoints = 0;
   let totalCredits = 0;
   let semestersEntered = 0;
 
-  for (let sem = 1; sem <= 8; sem++) {
-    const sgpaInput = document.getElementById("sgpa" + sem);
-    const creditsInput = document.getElementById("credits" + sem);
+  for (let s = 1; s <= 8; s++) {
+    const sgpaEl = document.getElementById("sgpa" + s);
+    const creditsEl = document.getElementById("credits" + s);
 
-    if (!sgpaInput || !creditsInput) continue;
+    if (sgpaEl && creditsEl && sgpaEl.value && creditsEl.value) {
+      const sgpa = parseFloat(sgpaEl.value);
+      const credits = parseFloat(creditsEl.value);
 
-    const sgpaValue = parseFloat(sgpaInput.value);
-    const creditsValue = parseFloat(creditsInput.value);
-
-    if (
-      !isNaN(sgpaValue) &&
-      !isNaN(creditsValue) &&
-      sgpaValue > 0 &&
-      creditsValue > 0
-    ) {
-      if (sgpaValue > 10) {
-        document.getElementById("cgpaOutputSection").innerHTML =
-          `<div class="placeholder-text"><h3 style="color: #ff6b6b;">SGPA for Semester ${sem} cannot exceed 10!</h3></div>`;
-        return;
+      if (!isNaN(sgpa) && !isNaN(credits) && credits > 0) {
+        totalCreditPoints += sgpa * credits;
+        totalCredits += credits;
+        semestersEntered++;
       }
-      totalCreditPoints += sgpaValue * creditsValue;
-      totalCredits += creditsValue;
-      semestersEntered++;
     }
   }
 
   if (semestersEntered === 0) {
-    document.getElementById("cgpaOutputSection").innerHTML =
-      '<div class="placeholder-text"><h3 style="color: #ff6b6b;">Please enter data for at least one semester!</h3></div>';
-    return;
+    return showError("Please enter at least one semester's data");
   }
 
   const cgpa = totalCreditPoints / totalCredits;
-
-  let output = `<div class="sgpa-display">
-    <div class="label">Overall CGPA:</div>
-    <div class="value">${cgpa.toFixed(2)}</div>
-  </div>`;
-
-  output += `<h4 class="breakdown-title">Semester Breakdown:</h4>
-  <div class="table-responsive"><table class="breakdown-table">
-  <thead><tr><th>Semester</th><th>SGPA</th><th>Credits</th><th>Credit Points</th></tr></thead><tbody>`;
+  
+  let output = `<div class="cgpa-table-container"><table>
+    <thead><tr><th>Semester</th><th>SGPA</th><th>Credits</th><th>Point Index</th></tr></thead>
+    <tbody>`;
 
   for (let s = 1; s <= 8; s++) {
-    const sgpaInput = document.getElementById("sgpa" + s);
-    const creditsInput = document.getElementById("credits" + s);
-    if (!sgpaInput) continue;
-
-    const sgpaValue = parseFloat(sgpaInput.value);
-    const creditsValue = parseFloat(creditsInput.value);
-
-    if (
-      !isNaN(sgpaValue) &&
-      !isNaN(creditsValue) &&
-      sgpaValue > 0 &&
-      creditsValue > 0
-    ) {
-      const cp = sgpaValue * creditsValue;
-      output += `<tr><td>Semester ${s}</td><td>${sgpaValue.toFixed(2)}</td><td>${creditsValue}</td><td>${cp.toFixed(2)}</td></tr>`;
+    const sgpaVal = parseFloat(document.getElementById("sgpa" + s)?.value);
+    const credVal = parseFloat(document.getElementById("credits" + s)?.value);
+    if (!isNaN(sgpaVal) && !isNaN(credVal) && credVal > 0) {
+      output += `<tr><td>Sem ${s}</td><td>${sgpaVal.toFixed(2)}</td><td>${credVal}</td><td>${(sgpaVal * credVal).toFixed(2)}</td></tr>`;
     }
   }
 
   output += `</tbody></table></div>`;
   output += `<div class="summary-box">
-    <strong>Total Credit Points:</strong> ${totalCreditPoints.toFixed(2)} | 
-    <strong>Total Credits:</strong> ${totalCredits} | 
-    <strong>Semesters Included:</strong> ${semestersEntered} | 
-    <strong>CGPA:</strong> ${cgpa.toFixed(2)}
+    <strong>CGPA: ${cgpa.toFixed(2)}</strong> | Credits: ${totalCredits} | Semesters: ${semestersEntered}
   </div>`;
 
   document.getElementById("cgpaOutputSection").innerHTML = output;
-  document
-    .getElementById("cgpaOutputSection")
-    .scrollIntoView({ behavior: "smooth" });
-
+  document.getElementById("cgpaOutputSection").scrollIntoView({ behavior: "smooth" });
   if (cgpa >= 9.0) triggerConfetti();
+  saveState();
 }
 
-// ══════════════════════════════════════════════════════════════
-//  PERSISTENCE — Save / Load state to localStorage
-// ══════════════════════════════════════════════════════════════
+// ── Shared Logic: Auto-save ──
 
-// Save the current selections and marks so the user can resume later
-function saveState() {
-  const state = getState();
-  const persistentData = {
-    batch: state.selectedBatch,
-    branch: state.selectedBranch,
-    semester: state.selectedSemester,
-    marks: {},
-    cgpa: {},
-  };
-
-  // Save subject marks
-  state.currentSubjects.forEach((subject) => {
-    const marks = {};
-    if (subject.hasOptions) {
-      const el = document.getElementById("s" + subject.id + "-elective");
-      if (el) marks.elective = el.value;
-    }
-
-    subject.fields.forEach((field) => {
-      const el = document.getElementById("s" + subject.id + "-" + field.name);
-      if (el) marks[field.name] = el.value;
-    });
-
-    const high = document.getElementById("s" + subject.id + "-highest");
-    if (high) marks.highest = high.value;
-
-    persistentData.marks[subject.id] = marks;
-  });
-
-  // Save CGPA
-  for (let s = 1; s <= 8; s++) {
-    const sgpa = document.getElementById("sgpa" + s);
-    const cred = document.getElementById("credits" + s);
-    if (sgpa && cred) {
-      persistentData.cgpa[s] = { sgpa: sgpa.value, credits: cred.value };
-    }
-  }
-
-  localStorage.setItem("cgpaCalcState", JSON.stringify(persistentData));
-}
-
-// On page load, restore previously saved dropdown selections
-function loadState() {
-  const saved = localStorage.getItem("cgpaCalcState");
-  if (!saved) return;
-  const data = JSON.parse(saved);
-
-  // Restore CGPA
-  if (data.cgpa) {
-    for (let s = 1; s <= 8; s++) {
-      if (data.cgpa[s]) {
-        const sgpa = document.getElementById("sgpa" + s);
-        const cred = document.getElementById("credits" + s);
-        if (sgpa && cred) {
-          sgpa.value = data.cgpa[s].sgpa || "";
-          cred.value = data.cgpa[s].credits || "";
-        }
-      }
-    }
-  }
-
-  // Restore the batch/branch/semester dropdowns
-  if (data.batch && data.branch && data.semester) {
-    const batchSelect = document.getElementById("batchSelect");
-    const branchSelect = document.getElementById("branchSelect");
-    const semesterSelect = document.getElementById("semesterSelect");
-
-    if (batchSelect && branchSelect && semesterSelect) {
-      batchSelect.value = data.batch;
-      branchSelect.value = data.branch;
-      semesterSelect.value = data.semester;
-    }
-  }
-}
-
-// After switching to the calculator screen, fill in any saved marks
-function restoreMarksForCurrentSelection() {
-  const saved = localStorage.getItem("cgpaCalcState");
-  if (!saved) return;
-  const data = JSON.parse(saved);
-
-  // Check if saved data matches current selection
-  const currentBatch = document.getElementById("batchSelect").value;
-  const currentBranch = document.getElementById("branchSelect").value;
-  const currentSemester = parseInt(
-    document.getElementById("semesterSelect").value,
-  );
-
-  if (
-    data.batch === currentBatch &&
-    data.branch === currentBranch &&
-    data.semester === currentSemester &&
-    data.marks
-  ) {
-    Object.keys(data.marks).forEach((subId) => {
-      const marks = data.marks[subId];
-      if (marks) {
-        if (marks.elective) {
-          const el = document.getElementById("s" + subId + "-elective");
-          if (el) el.value = marks.elective;
-        }
-        if (marks.highest) {
-          const el = document.getElementById("s" + subId + "-highest");
-          if (el) el.value = marks.highest;
-        }
-        Object.keys(marks).forEach((key) => {
-          if (key !== "elective" && key !== "highest") {
-            const el = document.getElementById("s" + subId + "-" + key);
-            if (el) {
-              el.value = marks[key];
-              updatePrediction(parseInt(subId));
-            }
-          }
-        });
-      }
-    });
-  }
-}
-
-// Auto-save whenever any input or dropdown changes (debounced)
 function addAutoSaveListeners() {
   const inputs = document.querySelectorAll("input, select");
   const debouncedSave = debounce(saveState, 500);
@@ -455,10 +307,12 @@ function addAutoSaveListeners() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  INITIALIZATION — Runs once when the page finishes loading
+//  INITIALIZATION
 // ══════════════════════════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadState(); // Restore saved dropdown selections
-  addAutoSaveListeners(); // Auto-save on any input change
+  initProfiles();
+  renderProfileDropdown();
+  loadState();
+  addAutoSaveListeners();
 });
