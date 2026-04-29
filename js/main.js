@@ -45,6 +45,7 @@ window.proceedToCGPACalculator = proceedToCGPACalculator;
 window.changeSelection = changeSelection;
 window.calculateOverallSGPA = calculateOverallSGPA;
 window.calculateCGPA = calculateCGPA;
+window.backToSGPACalculator = backToSGPACalculator;
 
 // ══════════════════════════════════════════════════════════════
 //  MAIN FLOW — Screen navigation and user actions
@@ -94,6 +95,18 @@ function proceedToCGPACalculator() {
   });
   document.getElementById("cgpaOutputSection").innerHTML =
     '<div class="placeholder-text"><h3>Your overall CGPA will appear here</h3></div>';
+}
+
+function backToSGPACalculator() {
+  const batchId = document.getElementById("batchSelect").value;
+  const branchId = document.getElementById("branchSelect").value;
+  const semesterId = parseInt(document.getElementById("semesterSelect").value);
+
+  if (!batchId || !branchId || isNaN(semesterId) || semesterId === 0) {
+    changeSelection();
+  } else {
+    proceedToCalculator();
+  }
 }
 
 function changeSelection() {
