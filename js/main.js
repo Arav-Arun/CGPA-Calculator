@@ -233,13 +233,47 @@ function calculateOverallSGPA() {
   const sgpa = totalCreditPoints / totalCredits;
   const resultDiv = document.getElementById("outputSection");
 
-  resultDiv.innerHTML = `
-    <div class="final-result-card">
-      <h2>Semester ${state.selectedSemester} Result</h2>
-      <div class="sgpa-value">${sgpa.toFixed(2)}</div>
-      <p>Total Credits: ${totalCredits} | Total Points: ${totalCreditPoints.toFixed(2)}</p>
-    </div>
-  `;
+  let output = `<div class="sgpa-display">
+    <div class="label">Semester ${state.selectedSemester} SGPA:</div>
+    <div class="value">${sgpa.toFixed(2)}</div>
+  </div>`;
+
+  output += `<h4 class="breakdown-title">Subject Breakdown:</h4>
+  <div class="table-responsive">
+  <table class="breakdown-table">
+  <thead><tr>
+  <th>Subject</th><th>Grade Point</th><th>Credits</th><th>Credit Points</th>
+  </tr></thead><tbody>`;
+
+  state.currentSubjects.forEach((subject) => {
+    let gp = state.gradePoints[subject.id] || 0;
+    const cp = gp * subject.credits;
+    let displayName = subject.name;
+
+    if (subject.hasOptions) {
+      const el = document.getElementById("s" + subject.id + "-elective");
+      if (el && el.value) {
+        const opt = subject.options.find((o) => o.value === el.value);
+        if (opt) displayName = opt.label;
+      }
+    }
+
+    output += `<tr>
+      <td>${displayName}</td>
+      <td>${gp}</td>
+      <td>${subject.credits}</td>
+      <td>${cp.toFixed(2)}</td>
+    </tr>`;
+  });
+
+  output += `</tbody></table></div>`;
+  output += `<div class="summary-box">
+    <strong>Total Credit Points:</strong> ${totalCreditPoints.toFixed(2)} | 
+    <strong>Total Credits:</strong> ${totalCredits} | 
+    <strong>SGPA:</strong> ${sgpa.toFixed(2)}
+  </div>`;
+
+  resultDiv.innerHTML = output;
   resultDiv.scrollIntoView({ behavior: "smooth" });
   if (sgpa >= 9.0) triggerConfetti();
   saveState();
@@ -272,21 +306,34 @@ function calculateCGPA() {
 
   const cgpa = totalCreditPoints / totalCredits;
   
-  let output = `<div class="cgpa-table-container"><table>
-    <thead><tr><th>Semester</th><th>SGPA</th><th>Credits</th><th>Point Index</th></tr></thead>
-    <tbody>`;
+  let output = `<div class="sgpa-display">
+    <div class="label">Overall CGPA:</div>
+    <div class="value">${cgpa.toFixed(2)}</div>
+  </div>`;
+
+  output += `<h4 class="breakdown-title">Semester Breakdown:</h4>
+  <div class="table-responsive"><table class="breakdown-table">
+  <thead><tr><th>Semester</th><th>SGPA</th><th>Credits</th><th>Credit Points</th></tr></thead><tbody>`;
 
   for (let s = 1; s <= 8; s++) {
-    const sgpaVal = parseFloat(document.getElementById("sgpa" + s)?.value);
-    const credVal = parseFloat(document.getElementById("credits" + s)?.value);
+    const sgpaEl = document.getElementById("sgpa" + s);
+    const creditsEl = document.getElementById("credits" + s);
+    if (!sgpaEl || !creditsEl) continue;
+
+    const sgpaVal = parseFloat(sgpaEl.value);
+    const credVal = parseFloat(creditsEl.value);
     if (!isNaN(sgpaVal) && !isNaN(credVal) && credVal > 0) {
-      output += `<tr><td>Sem ${s}</td><td>${sgpaVal.toFixed(2)}</td><td>${credVal}</td><td>${(sgpaVal * credVal).toFixed(2)}</td></tr>`;
+      const cp = sgpaVal * credVal;
+      output += `<tr><td>Semester ${s}</td><td>${sgpaVal.toFixed(2)}</td><td>${credVal}</td><td>${cp.toFixed(2)}</td></tr>`;
     }
   }
 
   output += `</tbody></table></div>`;
   output += `<div class="summary-box">
-    <strong>CGPA: ${cgpa.toFixed(2)}</strong> | Credits: ${totalCredits} | Semesters: ${semestersEntered}
+    <strong>Total Credit Points:</strong> ${totalCreditPoints.toFixed(2)} | 
+    <strong>Total Credits:</strong> ${totalCredits} | 
+    <strong>Semesters Included:</strong> ${semestersEntered} | 
+    <strong>CGPA:</strong> ${cgpa.toFixed(2)}
   </div>`;
 
   document.getElementById("cgpaOutputSection").innerHTML = output;
