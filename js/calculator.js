@@ -47,7 +47,7 @@ export function calculateSubject(subjectId) {
     resultDiv.innerHTML =
       "<strong style='color: #ff6b6b;'>Fill all fields correctly !</strong>";
     resultDiv.style.display = "block";
-    updateGradePoint(subjectId, 0);
+    updateGradePoint(subjectId, null);
     return;
   }
 
@@ -65,7 +65,7 @@ export function calculateSubject(subjectId) {
       subject.defaultHighest +
       " !</strong>";
     resultDiv.style.display = "block";
-    updateGradePoint(subjectId, 0);
+    updateGradePoint(subjectId, null);
     return;
   }
 

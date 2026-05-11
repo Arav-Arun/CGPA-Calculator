@@ -212,6 +212,11 @@ function calculateOverallSGPA() {
   const state = getState();
   if (state.currentSubjects.length === 0) return;
 
+  // Auto-calculate all subjects
+  state.currentSubjects.forEach((subject) => {
+    calculateSubject(subject.id);
+  });
+
   let totalCreditPoints = 0;
   let totalCredits = 0;
   let allCalculated = true;
@@ -227,7 +232,7 @@ function calculateOverallSGPA() {
   });
 
   if (!allCalculated) {
-    return showError("Please calculate all subjects first!");
+    return showError("Please fill all subject details correctly first!");
   }
 
   const sgpa = totalCreditPoints / totalCredits;
