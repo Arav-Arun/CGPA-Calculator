@@ -68,8 +68,37 @@ export function switchScreen(toScreenId, onComplete) {
 // ── Error Messages ──
 
 export function showError(message) {
-  const errorDiv = document.getElementById("selectionError");
-  if (!errorDiv) return;
+  let errorDiv;
+  
+  // Try to find an error container on the currently visible screen
+  const screens = ["selectionScreen", "calculatorScreen", "cgpaCalculatorScreen"];
+  let activeScreen = null;
+  
+  for (const id of screens) {
+    const el = document.getElementById(id);
+    if (el && el.style.display !== "none") {
+      activeScreen = el;
+      break;
+    }
+  }
+
+  if (activeScreen) {
+    errorDiv = activeScreen.querySelector(".error-message");
+    // If the active screen doesn't have an error message div, create one
+    if (!errorDiv) {
+      errorDiv = document.createElement("div");
+      errorDiv.className = "error-message";
+      activeScreen.insertBefore(errorDiv, activeScreen.firstChild);
+    }
+  } else {
+    // Fallback if no active screen found
+    errorDiv = document.getElementById("selectionError");
+  }
+
+  if (!errorDiv) {
+    alert(message);
+    return;
+  }
 
   errorDiv.textContent = message;
   errorDiv.style.display = "block";

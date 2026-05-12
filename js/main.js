@@ -212,24 +212,29 @@ function calculateOverallSGPA() {
   const state = getState();
   if (state.currentSubjects.length === 0) return;
 
-  // Auto-calculate all subjects
-  state.currentSubjects.forEach((subject) => {
-    calculateSubject(subject.id);
-  });
-
   let totalCreditPoints = 0;
   let totalCredits = 0;
   let allCalculated = true;
 
-  state.currentSubjects.forEach((subject) => {
-    const gp = state.gradePoints[subject.id];
-    if (gp !== undefined && gp !== null) {
-      totalCreditPoints += gp * subject.credits;
-      totalCredits += subject.credits;
-    } else {
-      allCalculated = false;
-    }
-  });
+  try {
+    // Auto-calculate all subjects
+    state.currentSubjects.forEach((subject) => {
+      calculateSubject(subject.id);
+    });
+
+    state.currentSubjects.forEach((subject) => {
+      const gp = state.gradePoints[subject.id];
+      if (gp !== undefined && gp !== null) {
+        totalCreditPoints += gp * subject.credits;
+        totalCredits += subject.credits;
+      } else {
+        allCalculated = false;
+      }
+    });
+  } catch (error) {
+    console.error("Error during calculation:", error);
+    return showError("An error occurred during calculation. Please check console.");
+  }
 
   if (!allCalculated) {
     return showError("Please fill all subject details correctly first!");
