@@ -233,10 +233,12 @@ function calculateOverallSGPA() {
     });
   } catch (error) {
     console.error("Error during calculation:", error);
+    alert("An error occurred: " + error.message);
     return showError("An error occurred during calculation. Please check console.");
   }
 
   if (!allCalculated) {
+    alert("Please ensure ALL subjects have their marks filled correctly. Some subjects are incomplete or have invalid data.");
     return showError("Please fill all subject details correctly first!");
   }
 
