@@ -1,80 +1,145 @@
 /**
  * Persistence Module
- * 
- * Handles saving and restoring the application state (marks, dropdowns, CGPA)
- * by interacting with the active profile.
+ *
+ * Saves and restores the application state (selection, subject marks and the
+ * CGPA grid) in localStorage under a single key.
  */
 
 import { getState } from "./state.js";
 import { updatePrediction } from "./calculator.js";
-import { getActiveProfileData, saveActiveProfileData } from "./profiles.js";
+
+const STORAGE_KEY = "cgpaCalcState";
+const LEGACY_PROFILES_KEY = "cgpaProfiles";
+
+// The shape of a saved blob
+const emptyData = () => ({
+  batch: null,
+  branch: null,
+  semester: null,
+  marks: {},
+  cgpa: {},
+});
 
 /**
- * Captures all current UI inputs and saves them to the active profile.
+ * Reads the saved blob from localStorage.
+ *
+ * Falls back to the older multi-profile format (cgpaProfiles) and migrates the
+ * active profile across, so users of the previous version keep their data.
+ * Never throws — corrupt storage just starts the user off empty.
  */
-export function saveState() {
-  const state = getState();
-  const persistentData = {
-    batch: state.selectedBatch,
-    branch: state.selectedBranch,
-    semester: state.selectedSemester,
-    marks: {},
-    cgpa: {},
-  };
+function readStoredData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return { ...emptyData(), ...JSON.parse(raw) };
 
-  // Save subject marks
-  state.currentSubjects.forEach((subject) => {
-    const marks = {};
-    
-    // Save elective selection if applicable
+    const legacy = localStorage.getItem(LEGACY_PROFILES_KEY);
+    if (legacy) {
+      const parsed = JSON.parse(legacy);
+      const active = parsed && parsed.profiles && parsed.profiles[parsed.activeProfileId];
+      if (active && active.data) {
+        const migrated = { ...emptyData(), ...active.data };
+        writeStoredData(migrated);
+        return migrated;
+      }
+    }
+  } catch (error) {
+    console.warn("Could not read saved data, starting fresh:", error);
+  }
+
+  return emptyData();
+}
+
+function writeStoredData(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.warn("Could not save data:", error);
+  }
+}
+
+// ── Capture helpers ──
+
+function collectMarks(subjects) {
+  const marks = {};
+
+  subjects.forEach((subject) => {
+    const entry = {};
+
+    // Elective selection, if this subject has options
     if (subject.hasOptions) {
       const el = document.getElementById("s" + subject.id + "-elective");
-      if (el) marks.elective = el.value;
+      if (el) entry.elective = el.value;
     }
 
-    // Save individual component marks
+    // Individual component marks
     subject.fields.forEach((field) => {
       const el = document.getElementById("s" + subject.id + "-" + field.name);
-      if (el) marks[field.name] = el.value;
+      if (el) entry[field.name] = el.value;
     });
 
-    // Save highest total override
+    // Highest total override
     const high = document.getElementById("s" + subject.id + "-highest");
-    if (high) marks.highest = high.value;
+    if (high) entry.highest = high.value;
 
-    persistentData.marks[subject.id] = marks;
+    marks[subject.id] = entry;
   });
 
-  // Save overall CGPA calculator fields
+  return marks;
+}
+
+function collectCGPA() {
+  const cgpa = {};
+
   for (let s = 1; s <= 8; s++) {
     const sgpa = document.getElementById("sgpa" + s);
     const cred = document.getElementById("credits" + s);
     if (sgpa && cred) {
-      persistentData.cgpa[s] = { sgpa: sgpa.value, credits: cred.value };
+      cgpa[s] = { sgpa: sgpa.value, credits: cred.value };
     }
   }
 
-  saveActiveProfileData(persistentData);
+  return cgpa;
 }
 
 /**
- * Restores selection dropdowns and CGPA values from the active profile.
+ * Captures the current UI inputs and merges them into what is already saved.
+ *
+ * The merge matters: auto-save fires from every screen, but the subject cards
+ * only exist on the SGPA screen. Rebuilding the whole blob from scratch would
+ * wipe the saved marks whenever the user typed anything anywhere else.
+ */
+export function saveState() {
+  const state = getState();
+  const data = readStoredData();
+
+  // Selection and marks are only meaningful once subject cards are rendered.
+  if (state.currentSubjects.length > 0) {
+    data.batch = state.selectedBatch;
+    data.branch = state.selectedBranch;
+    data.semester = state.selectedSemester;
+    data.marks = collectMarks(state.currentSubjects);
+  }
+
+  // The CGPA grid is always present in the DOM, so it is always safe to read.
+  data.cgpa = collectCGPA();
+
+  writeStoredData(data);
+}
+
+/**
+ * Restores the selection dropdowns and the CGPA grid from storage.
  */
 export function loadState() {
-  const data = getActiveProfileData();
-  if (!data) return;
+  const data = readStoredData();
 
   // Restore CGPA fields
-  if (data.cgpa) {
-    for (let s = 1; s <= 8; s++) {
-      if (data.cgpa[s]) {
-        const sgpa = document.getElementById("sgpa" + s);
-        const cred = document.getElementById("credits" + s);
-        if (sgpa && cred) {
-          sgpa.value = data.cgpa[s].sgpa || "";
-          cred.value = data.cgpa[s].credits || "";
-        }
-      }
+  for (let s = 1; s <= 8; s++) {
+    if (!data.cgpa[s]) continue;
+    const sgpa = document.getElementById("sgpa" + s);
+    const cred = document.getElementById("credits" + s);
+    if (sgpa && cred) {
+      sgpa.value = data.cgpa[s].sgpa || "";
+      cred.value = data.cgpa[s].credits || "";
     }
   }
 
@@ -93,45 +158,51 @@ export function loadState() {
 }
 
 /**
- * Specifically restores the marks for subject cards once they are rendered.
+ * Restores the marks for the subject cards once they have been rendered.
+ *
+ * Subject IDs repeat across branches (COMP and IT both use 301-312 in
+ * semester 3), so this only restores when the saved selection matches what is
+ * currently on screen.
  */
 export function restoreMarksForCurrentSelection() {
-  const data = getActiveProfileData();
-  if (!data || !data.marks) return;
+  const data = readStoredData();
+  if (!data.marks) return;
 
   const currentBatch = document.getElementById("batchSelect").value;
   const currentBranch = document.getElementById("branchSelect").value;
   const currentSemester = parseInt(document.getElementById("semesterSelect").value);
 
-  // Only restore if the saved selection matches the current UI
   if (
-    data.batch === currentBatch &&
-    data.branch === currentBranch &&
-    data.semester === currentSemester
+    data.batch !== currentBatch ||
+    data.branch !== currentBranch ||
+    data.semester !== currentSemester
   ) {
-    Object.keys(data.marks).forEach((subId) => {
-      const marks = data.marks[subId];
-      if (!marks) return;
-
-      if (marks.elective) {
-        const el = document.getElementById("s" + subId + "-elective");
-        if (el) el.value = marks.elective;
-      }
-      
-      if (marks.highest) {
-        const el = document.getElementById("s" + subId + "-highest");
-        if (el) el.value = marks.highest;
-      }
-
-      Object.keys(marks).forEach((key) => {
-        if (key !== "elective" && key !== "highest") {
-          const el = document.getElementById("s" + subId + "-" + key);
-          if (el) {
-            el.value = marks[key];
-            updatePrediction(parseInt(subId));
-          }
-        }
-      });
-    });
+    return;
   }
+
+  Object.keys(data.marks).forEach((subId) => {
+    const marks = data.marks[subId];
+    if (!marks) return;
+
+    if (marks.elective) {
+      const el = document.getElementById("s" + subId + "-elective");
+      if (el) el.value = marks.elective;
+    }
+
+    // Restore "highest" before the component marks so the predictions below
+    // each ESE field are computed against the right denominator.
+    if (marks.highest) {
+      const el = document.getElementById("s" + subId + "-highest");
+      if (el) el.value = marks.highest;
+    }
+
+    Object.keys(marks).forEach((key) => {
+      if (key === "elective" || key === "highest") return;
+      const el = document.getElementById("s" + subId + "-" + key);
+      if (el) {
+        el.value = marks[key];
+        updatePrediction(parseInt(subId));
+      }
+    });
+  });
 }

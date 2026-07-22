@@ -5,7 +5,6 @@
  *  - state.js        → holds global app state
  *  - data-config.js  → subject data
  *  - ui.js           → screen switching and rendering
- *  - profiles.js     → multi-profile management
  *  - persistence.js  → save/load logic
  *  - calculator.js   → calculation engine
  *  - utils.js        → helper functions
@@ -40,13 +39,6 @@ import {
 } from "./calculator.js";
 
 import {
-  initProfiles,
-  getActiveProfileData,
-  switchProfileLogic,
-  renderProfileMenu,
-} from "./profiles.js";
-
-import {
   saveState,
   loadState,
   restoreMarksForCurrentSelection,
@@ -64,8 +56,6 @@ window.changeSelection = changeSelection;
 window.calculateOverallSGPA = calculateOverallSGPA;
 window.calculateCGPA = calculateCGPA;
 window.backToSGPACalculator = backToSGPACalculator;
-window.switchProfile = switchProfile;
-window.toggleProfileMenu = toggleProfileMenu;
 
 // ══════════════════════════════════════════════════════════════
 //  MAIN FLOW — Screen navigation and user actions
@@ -138,12 +128,8 @@ function changeSelection() {
   document.getElementById("outputSection").innerHTML = placeholder;
   document.getElementById("cgpaOutputSection").innerHTML = placeholder;
 
-  for (let sem = 1; sem <= 8; sem++) {
-    const s = document.getElementById("sgpa" + sem);
-    const c = document.getElementById("credits" + sem);
-    if (s) s.value = "";
-    if (c) c.value = "";
-  }
+  // The CGPA grid is deliberately left alone — it holds the user's whole
+  // degree history and has nothing to do with the batch/branch/semester pick.
 
   document.getElementById("batchSelect").value = "";
   document.getElementById("branchSelect").value = "";
@@ -154,52 +140,6 @@ function changeSelection() {
     document.body.classList.add("body-centered");
   });
 }
-
-// ══════════════════════════════════════════════════════════════
-//  MULTI-PROFILE ACTIONS
-// ══════════════════════════════════════════════════════════════
-
-function switchProfile(profileId) {
-  switchProfileLogic(profileId, () => {
-    renderProfileDropdown();
-    
-    // Smart Reload: Jump to calculator if selection exists
-    const data = getActiveProfileData();
-    
-    // Reset everything first
-    changeSelection();
-    loadState();
-
-    if (data && data.batch && data.branch && data.semester) {
-      proceedToCalculator();
-    }
-  });
-}
-
-function renderProfileDropdown() {
-  renderProfileMenu(
-    (id) => switchProfile(id),
-    () => switchProfile("ADD_NEW")
-  );
-}
-
-function toggleProfileMenu(forceState) {
-  const menu = document.getElementById("profileMenu");
-  if (!menu) return;
-  if (typeof forceState === "boolean") {
-    forceState ? menu.classList.add("show") : menu.classList.remove("show");
-  } else {
-    menu.classList.toggle("show");
-  }
-}
-
-// Close profile menu on outside click
-document.addEventListener("click", (e) => {
-  const container = document.querySelector(".profile-dropdown-container");
-  if (container && !container.contains(e.target)) {
-    toggleProfileMenu(false);
-  }
-});
 
 // ══════════════════════════════════════════════════════════════
 //  CALCULATION WRAPPERS (Directly calling engine)
@@ -356,10 +296,21 @@ function calculateCGPA() {
 
 // ── Shared Logic: Auto-save ──
 
+// One shared debounced saver, so a burst of typing anywhere on the page
+// results in exactly one write.
+const debouncedSave = debounce(saveState, 500);
+
+/**
+ * Wires auto-save onto every input that does not already have it.
+ *
+ * This runs again each time subject cards are rendered, so the flag keeps the
+ * static inputs (dropdowns, CGPA grid) from stacking up a fresh pair of
+ * listeners on every trip into the calculator.
+ */
 function addAutoSaveListeners() {
-  const inputs = document.querySelectorAll("input, select");
-  const debouncedSave = debounce(saveState, 500);
-  inputs.forEach((input) => {
+  document.querySelectorAll("input, select").forEach((input) => {
+    if (input.dataset.autosaveBound) return;
+    input.dataset.autosaveBound = "true";
     input.addEventListener("input", debouncedSave);
     input.addEventListener("change", debouncedSave);
   });
@@ -370,8 +321,6 @@ function addAutoSaveListeners() {
 // ══════════════════════════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", () => {
-  initProfiles();
-  renderProfileDropdown();
   loadState();
   addAutoSaveListeners();
 });
