@@ -1,12 +1,11 @@
-import { useMemo } from "react";
-import { calcSubject, predictEse } from "../lib/grading.js";
+import { useMemo, useState } from "react";
+import { calcSubject, predictEse, calcSgpa } from "../core/gpa.js";
+import { useResult, Output } from "./Result.jsx";
 
 /** One line of the "marks needed in ESE" hint. */
 function Prediction({ part }) {
-  if (part.kind === "fail")
-    return <span className="predict-fail">{part.pointer} Pt not possible</span>;
-  if (part.kind === "secured")
-    return <span className="predict-success">Already secured {part.pointer} Pointer!</span>;
+  if (part.kind === "fail") return <span className="predict-fail">{part.pointer} Pt not possible</span>;
+  if (part.kind === "secured") return <span className="predict-success">Already secured {part.pointer} Pointer!</span>;
   return (
     <>
       Need <strong>{part.need}</strong>/{part.max} in ESE for {part.pointer} Pt
@@ -14,7 +13,7 @@ function Prediction({ part }) {
   );
 }
 
-export default function SubjectCard({ subject, entry, onChange, revealed, onCalculate }) {
+function SubjectCard({ subject, entry, revealed, onChange, onCalculate }) {
   const result = useMemo(() => calcSubject(subject, entry), [subject, entry]);
   const prediction = useMemo(() => predictEse(subject, entry), [subject, entry]);
 
@@ -32,9 +31,7 @@ export default function SubjectCard({ subject, entry, onChange, revealed, onCalc
           >
             <option value="">-- Choose Your Elective --</option>
             {subject.options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>
@@ -42,9 +39,7 @@ export default function SubjectCard({ subject, entry, onChange, revealed, onCalc
 
       {subject.fields.map((field) => (
         <div className="input-group" key={field.name}>
-          <label>
-            {field.label} (out of {field.max})
-          </label>
+          <label>{field.label} (out of {field.max})</label>
           <input
             type="number"
             min="0"
@@ -75,9 +70,7 @@ export default function SubjectCard({ subject, entry, onChange, revealed, onCalc
         />
       </div>
 
-      <button className="calculate-subject-button" onClick={onCalculate}>
-        Calculate Subject Pointer
-      </button>
+      <button className="calculate-subject-button" onClick={onCalculate}>Calculate Subject Pointer</button>
 
       {revealed && (
         <div className="subject-result" style={{ display: "block" }}>
@@ -94,6 +87,53 @@ export default function SubjectCard({ subject, entry, onChange, revealed, onCalc
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+export default function Sgpa({ subjects, semester, breadcrumb, marks, onMarkChange, onChangeSelection, onGoCgpa }) {
+  const [revealed, setRevealed] = useState({});
+  const { result, error, ref, submit } = useResult();
+
+  const calculate = () => {
+    // Mirror the classic behaviour: reveal every card's result at once.
+    setRevealed(Object.fromEntries(subjects.map((s) => [s.id, true])));
+    submit(calcSgpa(subjects, marks, semester));
+  };
+
+  return (
+    <div className="calculator-screen">
+      <div className="breadcrumb">
+        <span>{breadcrumb}</span>
+        <div className="breadcrumb-buttons">
+          <button className="change-selection-button" onClick={onChangeSelection}>Change Selection</button>
+          <button className="cgpa-calculator-button-small" onClick={onGoCgpa}>Calculate Overall CGPA</button>
+        </div>
+      </div>
+
+      <div className="info-box">
+        <p>1. Enter marks for each subject and click "Calculate Subject Pointer"</p>
+        <p>2. Then click "Calculate Overall SGPA" to get overall SGPA</p>
+      </div>
+
+      <div className="subjects-grid">
+        {subjects.map((subject) => (
+          <SubjectCard
+            key={subject.id}
+            subject={subject}
+            entry={marks[subject.id] ?? {}}
+            revealed={!!revealed[subject.id]}
+            onChange={(field, value) => onMarkChange(subject.id, field, value)}
+            onCalculate={() => setRevealed((r) => ({ ...r, [subject.id]: true }))}
+          />
+        ))}
+      </div>
+
+      <div className="calculate-sgpa-container">
+        <button className="calculate-sgpa-button" onClick={calculate}>Calculate Overall SGPA</button>
+      </div>
+
+      <Output result={result} error={error} outputRef={ref} placeholder="Your overall SGPA will appear here" />
     </div>
   );
 }

@@ -46,10 +46,7 @@ export function loadState() {
   const cgpa = emptyCgpa();
   for (let s = 1; s <= SEMESTERS; s++) {
     if (data.cgpa?.[s]) {
-      cgpa[s - 1] = {
-        sgpa: data.cgpa[s].sgpa || "",
-        credits: data.cgpa[s].credits || "",
-      };
+      cgpa[s - 1] = { sgpa: data.cgpa[s].sgpa || "", credits: data.cgpa[s].credits || "" };
     }
   }
 

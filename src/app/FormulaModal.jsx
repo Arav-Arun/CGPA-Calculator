@@ -20,9 +20,7 @@ export default function FormulaModal({ open, onClose }) {
       }}
     >
       <div className="modal-content">
-        <button className="close-modal-button" onClick={onClose}>
-          X
-        </button>
+        <button className="close-modal-button" onClick={onClose}>X</button>
 
         <h2>SGPA Calculation Guide</h2>
 
@@ -40,9 +38,7 @@ export default function FormulaModal({ open, onClose }) {
               {GRADE_TABLE.map(([marks, point, grade]) => (
                 <tr key={point}>
                   <td>{marks}</td>
-                  <td>
-                    <strong>{point}</strong>
-                  </td>
+                  <td><strong>{point}</strong></td>
                   <td>{grade}</td>
                 </tr>
               ))}
@@ -56,59 +52,39 @@ export default function FormulaModal({ open, onClose }) {
           <div className="calculation-step">
             <h4>For Theory Subjects (with IA, MSE, ESE):</h4>
             <code>Step 1: Total = IA + MSE + ESE</code>
-            <p>
-              <strong>Example:</strong> 18 + 25 + 42 = 85 marks
-            </p>
+            <p><strong>Example:</strong> 18 + 25 + 42 = 85 marks</p>
             <code>Step 2: Percentage = (Total / Highest Marks) × 100</code>
-            <p>
-              <strong>Example:</strong> (85 / 100) × 100 = 85%
-            </p>
+            <p><strong>Example:</strong> (85 / 100) × 100 = 85%</p>
             <code>Step 3: Grade Point = Based on percentage (see table)</code>
-            <p>
-              <strong>Example:</strong> 85% = Grade Point 10
-            </p>
+            <p><strong>Example:</strong> 85% = Grade Point 10</p>
           </div>
 
           <div className="calculation-step">
             <h4>For Tutorial/Lab Subjects (CA or Lab marks only):</h4>
             <code>Step 1: Total = CA or Lab marks</code>
-            <p>
-              <strong>Example:</strong> 45 out of 50
-            </p>
+            <p><strong>Example:</strong> 45 out of 50</p>
             <code>Step 2: Percentage = (Total / Highest Marks) × 100</code>
-            <p>
-              <strong>Example:</strong> (45 / 50) × 100 = 90%
-            </p>
+            <p><strong>Example:</strong> (45 / 50) × 100 = 90%</p>
             <code>Step 3: Grade Point = Based on percentage (see table)</code>
-            <p>
-              <strong>Example:</strong> 90% = Grade Point 10
-            </p>
+            <p><strong>Example:</strong> 90% = Grade Point 10</p>
           </div>
 
           <div className="calculation-step">
             <h4>Calculate Credit Points for Each Subject:</h4>
             <code>Credit Points = Grade Point × Subject Credits</code>
-            <p>
-              <strong>Example:</strong> 10 × 4 = 40 credit points
-            </p>
+            <p><strong>Example:</strong> 10 × 4 = 40 credit points</p>
           </div>
 
           <div className="calculation-step highlight-step">
             <h4>Final Step: Calculate Overall SGPA</h4>
             <code>SGPA = Total Credit Points / Total Credits</code>
-            <p>
-              <strong>Example:</strong> 200 / 22 = 9.09
-            </p>
+            <p><strong>Example:</strong> 200 / 22 = 9.09</p>
           </div>
 
           <div className="calculation-step highlight-step">
             <h4>Calculate Overall CGPA</h4>
-            <code>
-              CGPA = (SGPA1×Credits1 + SGPA2×Credits2 + ... + SGPA8×Credits8) / Total Credits
-            </code>
-            <p>
-              <strong>Example:</strong> (9.0×21 + 9.5×20 + 8.8×22 + 9.2×21) / 84 = 9.13
-            </p>
+            <code>CGPA = (SGPA1×Credits1 + SGPA2×Credits2 + ... + SGPA8×Credits8) / Total Credits</code>
+            <p><strong>Example:</strong> (9.0×21 + 9.5×20 + 8.8×22 + 9.2×21) / 84 = 9.13</p>
           </div>
         </div>
 

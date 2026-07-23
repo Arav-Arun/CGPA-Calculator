@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import SelectionScreen from "./components/SelectionScreen.jsx";
-import SgpaScreen from "./components/SgpaScreen.jsx";
-import CgpaScreen from "./components/CgpaScreen.jsx";
-import FormulaModal from "./components/FormulaModal.jsx";
-import { getSubjects } from "./data/subjects.js";
-import { branchFullName } from "./data/options.js";
-import { loadState, saveState } from "./lib/storage.js";
+import Selection from "../screens/Selection.jsx";
+import Sgpa from "../screens/Sgpa.jsx";
+import Cgpa from "../screens/Cgpa.jsx";
+import FormulaModal from "./FormulaModal.jsx";
+import { getSubjects, branchFullName } from "../subjects/index.js";
+import { loadState, saveState } from "../core/storage.js";
 
 const EMPTY_SELECTION = { batch: "", branch: "", semester: "" };
 const keyOf = (sel) => (sel ? `${sel.batch}|${sel.branch}|${sel.semester}` : null);
@@ -81,23 +80,19 @@ export default function App() {
   const updateCgpa = (index, field, value) =>
     setCgpa((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
 
-  const onSgpaScreen = screen === "sgpa" && subjects;
-
   return (
     <>
       <div id="app-container" className={screen === "selection" ? "main-card" : ""}>
         <header className="banner">
           <h1>KJSSE CGPA Calculator</h1>
           <div className="header-actions">
-            <button className="view-formula-button" onClick={() => setShowModal(true)}>
-              View Formula
-            </button>
+            <button className="view-formula-button" onClick={() => setShowModal(true)}>View Formula</button>
           </div>
         </header>
 
         <main>
           {screen === "selection" && (
-            <SelectionScreen
+            <Selection
               selection={selection}
               onChange={updateSelection}
               onProceedSgpa={proceedToSgpa}
@@ -106,8 +101,8 @@ export default function App() {
             />
           )}
 
-          {onSgpaScreen && (
-            <SgpaScreen
+          {screen === "sgpa" && subjects && (
+            <Sgpa
               subjects={subjects}
               semester={committed.semester}
               breadcrumb={`Batch ${committed.batch} | ${branchFullName(committed.branch)} | Semester ${committed.semester}`}
@@ -119,7 +114,7 @@ export default function App() {
           )}
 
           {screen === "cgpa" && (
-            <CgpaScreen
+            <Cgpa
               cgpa={cgpa}
               onCgpaChange={updateCgpa}
               onBackToSelection={changeSelection}
@@ -131,9 +126,7 @@ export default function App() {
         <footer>
           <p>
             Made with ❤️ by{" "}
-            <a href="https://aravarun.xyz" style={{ textDecoration: "underline" }}>
-              Arav Arun
-            </a>
+            <a href="https://aravarun.xyz" style={{ textDecoration: "underline" }}>Arav Arun</a>
           </p>
         </footer>
       </div>
