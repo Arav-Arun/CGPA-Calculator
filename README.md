@@ -1,0 +1,16 @@
+# 🎓 KJSSE CGPA Calculator
+
+![KJSCE CGPA Calculator Logo](./public/assets/banner.png)
+
+A **minimal**, **intuitive**, and **responsive** web-based calculator built to help **KJSSE students** easily compute their **CGPA** and **SGPA** based on semester grades and credits.
+
+---
+
+## Features
+
+- **Dynamic Subject Selection:** Automatically populates subjects based on selected Batch, Branch, and Semester.
+- **SGPA Calculation:** Calculates Semester Grade Point Average based on marks and credits.
+- **Overall CGPA Calculation:** Calculates Cumulative Grade Point Average across multiple semesters.
+- **Mobile Optimized:** Fully responsive design that works seamlessly on all devices.
+- **Modern UI:** Features a dark mode aesthetic with a subtle grid background and glassmorphism effects.
+- **Privacy Focused:** All calculations are done locally in your browser. No data is sent to any server.
