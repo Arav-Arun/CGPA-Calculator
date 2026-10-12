@@ -15,6 +15,29 @@ import {
 } from "./2025-2029.js";
 
 import {
+  semester3Subjects_COMP_2025,
+  semester4Subjects_COMP_2025,
+  semester3Subjects_RAI_2025,
+  semester4Subjects_RAI_2025,
+  semester3Subjects_EXTC_2025,
+  semester4Subjects_EXTC_2025,
+  semester3Subjects_AIDS_2025,
+  semester4Subjects_AIDS_2025,
+  semester3Subjects_MECH_2025,
+  semester4Subjects_MECH_2025,
+  semester3Subjects_VLSI_2025,
+  semester4Subjects_VLSI_2025,
+  semester3Subjects_CSBS_2025,
+  semester4Subjects_CSBS_2025,
+  semester3Subjects_EXCP_2025,
+  semester4Subjects_EXCP_2025,
+  semester3Subjects_IT_2025,
+  semester4Subjects_IT_2025,
+  semester3Subjects_CCE_2025,
+  semester4Subjects_CCE_2025,
+} from "./2025-2029-sem3-4.js";
+
+import {
   semester3Subjects_COMP_2024,
   semester3Subjects_RAI_2024,
   semester3Subjects_AIDS_2024,
@@ -63,6 +86,18 @@ const CATALOG = {
       if (MECH_RAI.includes(branch)) return [...semester2CommonSubjects, ...semester2Subjects_MechRAI];
       return null;
     },
+    3: (branch) =>
+      ({ comp: semester3Subjects_COMP_2025, it: semester3Subjects_IT_2025,
+         aids: semester3Subjects_AIDS_2025, csbs: semester3Subjects_CSBS_2025,
+         cce: semester3Subjects_CCE_2025, ece: semester3Subjects_EXCP_2025,
+         extc: semester3Subjects_EXTC_2025, vlsi: semester3Subjects_VLSI_2025,
+         rai: semester3Subjects_RAI_2025, mech: semester3Subjects_MECH_2025 })[branch] ?? null,
+    4: (branch) =>
+      ({ comp: semester4Subjects_COMP_2025, it: semester4Subjects_IT_2025,
+         aids: semester4Subjects_AIDS_2025, csbs: semester4Subjects_CSBS_2025,
+         cce: semester4Subjects_CCE_2025, ece: semester4Subjects_EXCP_2025,
+         extc: semester4Subjects_EXTC_2025, vlsi: semester4Subjects_VLSI_2025,
+         rai: semester4Subjects_RAI_2025, mech: semester4Subjects_MECH_2025 })[branch] ?? null,
   },
   "2024-2028": {
     3: (branch) =>

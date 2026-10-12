@@ -4,12 +4,20 @@ import Sgpa from "../screens/Sgpa.jsx";
 import Cgpa from "../screens/Cgpa.jsx";
 import FormulaModal from "./FormulaModal.jsx";
 import { getSubjects, branchFullName } from "../subjects/index.js";
-import { loadState, saveState } from "../core/storage.js";
+import { loadState, saveState, migrateSplitMarks } from "../core/storage.js";
 
 const EMPTY_SELECTION = { batch: "", branch: "", semester: "" };
 const keyOf = (sel) => (sel ? `${sel.batch}|${sel.branch}|${sel.semester}` : null);
 
 const initial = loadState();
+if (initial.committed) {
+  const initialSubjects = getSubjects(
+    initial.committed.branch,
+    Number(initial.committed.semester),
+    initial.committed.batch,
+  );
+  if (initialSubjects) initial.marks = migrateSplitMarks(initialSubjects, initial.marks);
+}
 
 export default function App() {
   const [screen, setScreen] = useState("selection");
@@ -126,7 +134,7 @@ export default function App() {
         <footer>
           <p>
             Made with ❤️ by{" "}
-            <a href="https://aravarun.xyz" style={{ textDecoration: "underline" }}>Arav Arun</a>
+            <a href="https://aravarun.in" style={{ textDecoration: "underline" }}>Arav Arun</a>
           </p>
         </footer>
       </div>

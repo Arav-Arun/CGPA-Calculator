@@ -14,6 +14,35 @@ const SEMESTERS = 8;
 export const emptyCgpa = () =>
   Array.from({ length: SEMESTERS }, () => ({ sgpa: "", credits: "" }));
 
+/** Move saved marks from an old combined course into its separate grading heads. */
+export function migrateSplitMarks(subjects, marks) {
+  let migrated = marks;
+  for (const subject of subjects) {
+    const source = subject.legacyCombined;
+    if (!source) continue;
+    const entry = migrated[source.subjectId];
+    if (!entry) continue;
+    const hasCombinedField = Object.hasOwn(entry, source.field);
+    const theory = subjects.find((head) => head.id === source.subjectId);
+    const highest = Number(entry.highest);
+    const hasCombinedHighest = !migrated[subject.id] && theory &&
+      highest > theory.defaultHighest && highest <= theory.defaultHighest + subject.defaultHighest;
+    if (!hasCombinedField && !hasCombinedHighest) continue;
+
+    if (migrated === marks) migrated = { ...marks };
+    const { [source.field]: componentMark, ...theoryMarks } = entry;
+    migrated[source.subjectId] = { ...theoryMarks, highest: "" };
+    if (hasCombinedField) {
+      const componentField = subject.fields[0].name;
+      migrated[subject.id] = {
+        ...migrated[subject.id],
+        [componentField]: migrated[subject.id]?.[componentField] ?? componentMark,
+      };
+    }
+  }
+  return migrated;
+}
+
 /** Read the raw blob, migrating the old multi-profile format. Never throws. */
 function read() {
   try {
