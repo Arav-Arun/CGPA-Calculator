@@ -42,7 +42,6 @@ export function migrateSplitMarks(subjects, marks) {
   }
   return migrated;
 }
-
 /** Read the raw blob, migrating the old multi-profile format. Never throws. */
 function read() {
   try {
